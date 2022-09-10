@@ -2,7 +2,6 @@
 更改INI文件
 # AdGuardHome Rules
 ##1. 过滤
-AdGuardSDNSFilter     https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/AdGuardSDNSFilter/AdGuardSDNSFilter.list
  规则名称                   | 订阅地址                                                     | 说明                                                         |
 | -------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | anti-AD                    | https://anti-ad.net/easylist.txt                             | 命中率最高列表，每天更新维护                                 |
@@ -12,7 +11,6 @@ AdGuardSDNSFilter     https://raw.githubusercontent.com/blackmatrix7/ios_rule_sc
 | 1024_hosts                 | https://cdn.jsdelivr.net/gh/Goooler/1024_hosts@master/hosts  | host去除法                                                   |
 | adgk手机去广告规则         | https://cdn.jsdelivr.net/gh/banbendalao/ADgk@master/ADgk.txt | 手机代码去广告，手机版本推荐订阅                             |
 ##2. 允许
-| -------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | AdGuardSDNSFilterDirect    | https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/AdGuardSDNSFilter/Direct/Direct.list | 允许列表      |
 
 ## 上游 DNS 服务器
