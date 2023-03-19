@@ -17,13 +17,13 @@
 
 ```yaml
 114.114.114.114
+199.85.126.20
+208.67.220.123
 https://dns.alidns.com/dns-query
 https://doh.pub/dns-query
-https://doh.360.cn/dns-query
 https://dns.cloudflare.com/dns-query
 https://dns.google/dns-query
 https://dns.adguard.com/dns-query
-https://dns.quad9.net/dns-query
 https://dns.nextdns.io # /id/你的设备名称
 ```
 
@@ -33,13 +33,8 @@ https://dns.nextdns.io # /id/你的设备名称
 223.5.5.5
 114.114.114.114
 119.29.29.29
-101.226.4.6
-180.76.76.76
-117.50.10.10
 1.1.1.1
 8.8.8.8
-9.9.9.10
-149.112.112.10
-2620:fe::10
-2620:fe::fe:10
+
+
 ```
