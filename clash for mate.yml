@@ -179,7 +179,8 @@ proxy-groups:
 #OpenAI
     - name: "🔥OpenAI"
       type: select
-      filter: "^(?!.*GAME).*)(^(?!.*香港).+$"
+      filter: "^(?!.*GAME)(?!.*香港).+$
+"
       use:
           - subscribe_groups
       proxies:
