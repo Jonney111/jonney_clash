@@ -1,5 +1,7 @@
 #此配置搭配openclash meta内核使用
-mixed-port: 7890 # 局域网访问Port
+redir-port: 7892
+tproxy-port: 7895
+mixed-port: 7893 # 局域网访问Port
 bind-address: '*' #绑定IP地址
 allow-lan: true # 允许局域网访问
 mode: rule # 模式
@@ -26,7 +28,7 @@ profile:
 
 # Tun 配置 Windows使用
 tun:
-    enable: true  #PC端开启 路由器不开启
+    enable: false  #PC端开启 路由器不开启
     stack: system # gvisor / lwip
     dns-hijack:
         - 0.0.0.0:53 # 需要劫持的 DNS
@@ -36,9 +38,9 @@ tun:
 dns:
     enable: true # 关闭将使用系统 DNS
     prefer-h3: true # 开启 DoH 支持 HTTP/3，将并发尝试
-    listen: '0.0.0.0:7874' # 开启 DNS 服务器监听
-    default-nameserver:
-        - 127.0.0.1:5335 # 如果是windows或安卓客户端可使用system，如果是软路由填写你的光猫的IP地址，拨号的路由器的IP地址 DNS 不必关闭光猫的ipv6功能,openclash运行在主路由上时填写任意公共DNS 记住是替换，不要保留system
+    listen: ':7874' # 开启 DNS 服务器监听
+    #default-nameserver:
+        #- 127.0.0.1 # 如果是windows或安卓客户端可使用system，如果是软路由填写你的光猫的IP地址，拨号的路由器的IP地址 DNS 不必关闭光猫的ipv6功能,openclash运行在主路由上时填写任意公共DNS 记住是替换，不要保留system
         #- 223.5.5.5
     enhanced-mode: fake-ip
     fake-ip-range: 198.18.0.1/16
@@ -144,6 +146,8 @@ dns:
         #- 223.5.5.5
         #- https://dns.alidns.com/dns-query#h3=true # 强制 HTTP/3，与 perfer-h3 无关，强制开启 DoH 的 HTTP/3 支持，若不支持将无法使用
         #- https://doh.pub/dns-query
+    fallback:
+        - 127.0.0.1:5335
 
 #节点存放地址
 proxies:
@@ -152,112 +156,110 @@ proxies:
 proxy-groups: 
 #Bilibili
     - name: "📺Bilibili"
-      type: select
+      type: select # 下面开启了自动测速
       filter: "^🇭🇰(?!.*GAME).*$|TW|台|台湾"
-      use:
-          - subscribe_groups
       proxies:
-          - DIRECT 
-       
-      url: "http://connectivitycheck.gstatic.com/generate_204"	  
+          - DIRECT 	
+      use:
+          - subscribe_groups  
 #Twitch
     - name: "👀Twitch"
-      type: select
+      type: select # 下面开启了自动测速
       filter: "^(?!.*GAME).*(香港|HK|Hong Kong|TW|台|台湾).*$"
-      use:
-          - subscribe_groups
       proxies:
-          - 🇭🇰 香港节点
-          - 🇸🇬 狮城节点       	      
+          - "🇭🇰 香港节点"
+          - "🇸🇬 狮城节点" 
+      use:
+          - subscribe_groups    
 #动画疯
     - name: "🎞️动画疯"
-      type: select
-      filter: "TW|台湾"
+      type: select # 下面开启了自动测速
+      filter: "TW|台湾" 
+      proxies:
       use:
-          - subscribe_groups 
-      proxies:	  
+          - subscribe_groups
 #OpenAI
     - name: "🔥OpenAI"
-      type: select
-      filter: "^(?!.*GAME)(?!.*香港).+$
-"
-      use:
-          - subscribe_groups
+      type: select # 下面开启了自动测速
+      filter: "^(?!.*GAME)(?!.*香港).+$"
       proxies:
-          - 🇸🇬 狮城节点          
+          - "🇸🇬 狮城节点" 
+      use:
+          - subscribe_groups       
 #Apple
     - name: "🍎Apple"
-      type: select
+      type: select # 下面开启了自动测速
       filter: "^(?!.*GAME).*香港|HK|Hong Kong|TW|台|台湾|新加坡|SG|狮城|美|美国|USA"
-      use:
-          - subscribe_groups
       proxies:
           - DIRECT
+      use:
+          - subscribe_groups
 #Youtube
     - name: "🎥Youtube"
-      type: select
-      filter: "^(?!.*GAME).*)(香港|HK|Hong Kong|TW|台|台湾|美|美国|USA|JP|日本"
-      use:
-          - subscribe_groups
+      type: select # 下面开启了自动测速
+      filter: "^(?!.*GAME)(香港|HK|Hong Kong|TW|台|台湾|美|美国|USA|JP|日本).+$"
       proxies:
-          - 🇭🇰 香港节点	        
+          - "🇭🇰 香港节点"
+      use:
+          - subscribe_groups	        
 #游戏平台
     - name: "🎮游戏平台"
-      type: select
+      type: select # 下面开启了自动测速
       filter: "^🇭🇰(?!.*GAME).*$|美国|台湾|阿根廷|新加坡|日本"
-      use:
-          - subscribe_groups
       proxies:
-          - DIRECT 	        
+          - DIRECT 	
+      use:
+          - subscribe_groups        
 # 游戏加速      
     - name: "🕹️游戏加速"
-      type: select
+      type: select # 下面开启了自动测速
       filter: "GAME|游戏|game|香港"
-      use:
-          - subscribe_groups
       proxies:
-          - DIRECT 	        
+          - DIRECT 
+      use:
+          - subscribe_groups	       
 # 奈飞      
     - name: "🎬Netflix"
-      type: select
+      type: select # 下面开启了自动测速
       filter: "TW|台|台湾|新加坡|SG|狮城|美|美国|USA|JP|日本"
-      use:
-          - subscribe_groups
       proxies:
-          - "🇸🇬 狮城节点"   
+          - "🇸🇬 狮城节点" 
+      use:
+          - subscribe_groups  
 #香港节点
     - name: "🇭🇰 香港节点"
       type: url-test # 下面开启了自动测速
       filter: "^🇭🇰(?!.*GAME).*$"
+      proxies:
       use:
-          - subscribe_groups
-      proxies:      
+          - subscribe_groups      
       url: "http://connectivitycheck.gstatic.com/generate_204"
       interval: 3600    #自动测速周期，单位：秒	  
 #狮城节点
     - name: "🇸🇬 狮城节点"
       type: fallback # 下面开启了自动测速
       filter: "(?i)sg|新加坡"
+      proxies:
       use:
-          - subscribe_groups
-      proxies:       
+          - subscribe_groups       
       url: "http://connectivitycheck.gstatic.com/generate_204"
-      interval: 3600    #自动测速周期，单位：秒	       
+      interval: 3600    #自动测速周期，单位：秒      
 #机场配置
     - name: "✈️机场配置"
-      type: select 
-      use:
-          - subscribe_groups
+      type: select # 下面开启了自动测速    
       proxies:
           - DIRECT 
-          - 🇭🇰 香港节点
-          - 🇸🇬 狮城节点	 	               
+          - "🇭🇰 香港节点"
+          - "🇸🇬 狮城节点"	
+      use:
+          - subscribe_groups 	     
+
 #代理集  如果是自建节点屏蔽这里  
 proxy-providers:
     #自定义机场名称subscribe_groups
     subscribe_groups:
         type: http # http 的 path 可空置,默认储存路径为 homedir的proxies文件夹,文件名为url的md5
-        url: "" #订阅链接存放在双引号内
+        url: "https://rss.paoluz.xyz/link/llZUYMTG9JddK0rg?sub=1&extend=1" #订阅链接存放在双引号内
         interval: 604800 #机场订阅自动更新时间 单位：秒
         path: ./paoluz.yaml # 默认只允许存储在 clash 的 Home Dir，如果想存储到任意位置，添加环境变量 SKIP_SAFE_PATH_CHECK=1
         health-check:
@@ -267,7 +269,8 @@ proxy-providers:
         override:
             skip-cert-verify: true
             udp: true
-        filter: "^((?!更新|剩余|流量|提示).)*$"      
+        filter: "^((?!更新|剩余|流量|提示).)*$"
+      
 #规则集
 rule-providers:     
     Bilibili:
@@ -387,48 +390,48 @@ rule-providers:
 
 rules:
 #域名规则
-    - RULE-SET,Bilibili,"📺Bilibili"
-    - RULE-SET,Twitch,"👀Twitch"
-    - RULE-SET,Bahamut,"🎞️动画疯"
-    - RULE-SET,Youtube,"🎥Youtube"
-    - RULE-SET,OpenAI,"🔥OpenAI"
-    - RULE-SET,BardAI,"🔥OpenAI" 
-    - RULE-SET,Steam,"🎮游戏平台"
-    - RULE-SET,Blizzard,"🎮游戏平台"
-    - RULE-SET,Xbox,"🎮游戏平台"
-    - RULE-SET,Origin,"🎮游戏平台"
-    - RULE-SET,Netflix,"🎬Netflix"
-    - RULE-SET,Apple,"🍎Apple"
+    - RULE-SET,Bilibili,📺Bilibili
+    - RULE-SET,Twitch,👀Twitch
+    - RULE-SET,Bahamut,🎞️动画疯
+    - RULE-SET,Youtube,🎥Youtube
+    - RULE-SET,OpenAI,🔥OpenAI
+    - RULE-SET,BardAI,🔥OpenAI 
+    - RULE-SET,Steam,🎮游戏平台
+    - RULE-SET,Blizzard,🎮游戏平台
+    - RULE-SET,Xbox,🎮游戏平台
+    - RULE-SET,Origin,🎮游戏平台
+    - RULE-SET,Netflix,🎬Netflix
+    - RULE-SET,Apple,🍎Apple
     - GEOSITE,microsoft@cn,DIRECT
     - GEOSITE,category-games@cn,DIRECT 
 #在这里添加自定义规则
-    - DOMAIN,xn--ngstr-lra8j.com,"✈️机场配置"
-    - DOMAIN,services.googleapis.cn,"✈️机场配置"
-    - DOMAIN,mtalk.google.com,"✈️机场配置"
-    - DOMAIN-SUFFIX,voidsec.com,"✈️机场配置"   #voidsec 礼貌性添加所谓的dns泄露检测站
-    - DOMAIN-SUFFIX,browserleaks.com,"✈️机场配置" #browserleaks 礼貌性添加所谓的dns泄露检测站
-    - DOMAIN-SUFFIX,ipleak.net,"✈️机场配置" #ipleak 礼貌性添加所谓的dns泄露检测站
+    - DOMAIN,xn--ngstr-lra8j.com,✈️机场配置
+    - DOMAIN,services.googleapis.cn,✈️机场配置
+    - DOMAIN,mtalk.google.com,✈️机场配置
+    - DOMAIN-SUFFIX,voidsec.com,✈️机场配置   #voidsec 礼貌性添加所谓的dns泄露检测站
+    - DOMAIN-SUFFIX,browserleaks.com,✈️机场配置 #browserleaks 礼貌性添加所谓的dns泄露检测站
+    - DOMAIN-SUFFIX,ipleak.net,✈️机场配置 #ipleak 礼貌性添加所谓的dns泄露检测站
     - DOMAIN,events.data.microsoft.com,REJECT #拦截微软部分遥测
-    - GEOSITE,telegram,"✈️机场配置"
+    - GEOSITE,telegram,✈️机场配置
     #- GEOSITE,netflix,Netflix
     #- GEOSITE,disney,Disney
-    - GEOSITE,spotify,"✈️机场配置"
-    - GEOSITE,facebook,PROXY
-    - GEOSITE,twitter,"✈️机场配置"
-    - GEOSITE,google,"✈️机场配置"
-    - GEOSITE,category-scholar-!cn,"✈️机场配置"
-    - GEOSITE,geolocation-!cn,"✈️机场配置"
-    - RULE-SET,gfw,"✈️机场配置"
+    - GEOSITE,spotify,✈️机场配置
+    - GEOSITE,facebook,✈️机场配置
+    - GEOSITE,twitter,✈️机场配置
+    - GEOSITE,google,✈️机场配置
+    - GEOSITE,category-scholar-!cn,✈️机场配置
+    - GEOSITE,geolocation-!cn,✈️机场配置
+    - RULE-SET,gfw,✈️机场配置
     - RULE-SET,direct,DIRECT
     - RULE-SET,lancidr,DIRECT
     - GEOSITE,cn,DIRECT  
 #IP规则     
     - RULE-SET,cncidr,DIRECT
     - GEOIP,CN,DIRECT     
-    - GEOIP,telegram,"✈️机场配置",no-resolve
-    - GEOIP,google,"✈️机场配置",no-resolve
-    - GEOIP,twitter,"✈️机场配置",no-resolve
-    - GEOIP,JP,"✈️机场配置",no-resolve    
+    - GEOIP,telegram,✈️机场配置,no-resolve
+    - GEOIP,google,✈️机场配置,no-resolve
+    - GEOIP,twitter,✈️机场配置,no-resolve
+    - GEOIP,JP,✈️机场配置,no-resolve    
 
 #最终匹配 白名单模式
-    - MATCH,"✈️机场配置"
+    - MATCH,✈️机场配置
