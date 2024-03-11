@@ -229,7 +229,7 @@ proxy-groups:
 #香港节点
     - name: "🇭🇰 香港节点"
       type: url-test # 下面开启了自动测速
-      filter: "^🇭🇰(?!.*GAME).*$"
+      filter: "^(?!.*GAME).*香港.*$"
       proxies:
       use:
           - subscribe_groups      
