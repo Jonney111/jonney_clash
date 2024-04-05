@@ -1,0 +1,287 @@
+mode: rule
+# ipv6 支持
+ipv6: false
+log-level: info
+# 允许局域网连接
+allow-lan: true
+# socks5/http 端口
+mixed-port: 7890
+# Meta 内核特性 https://wiki.metacubex.one/config/general
+# 统一延迟
+# 更换延迟计算方式,去除握手等额外延迟
+unified-delay: true
+# TCP 并发
+# 同时对所有ip进行连接，返回延迟最低的地址
+tcp-concurrent: true
+# 外部控制端口
+external-controller: :9090
+
+geodata-mode: true
+
+geox-url:                           # 自定义 geodata url, 需要有代理的前提才能下载geoip和geosite
+    geoip: "https://gcore.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geoip.dat"
+    geosite: "https://gcore.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/geosite.dat"
+    mmdb: "https://gcore.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@release/country.mmdb"
+
+# 进程匹配模式
+# 路由器上请设置为 off
+# always 开启，强制匹配所有进程
+# strict 默认，由 Clash 判断是否开启
+# off 不匹配进程，推荐在路由器上使用此模式
+find-process-mode: strict
+
+# 缓解移动设备耗电问题
+# https://github.com/vernesong/OpenClash/issues/2614
+keep-alive-interval: 1800
+
+# 全局客户端指纹
+global-client-fingerprint: random # 随机指纹
+
+# 缓存
+profile:
+    store-selected: true          # 存储 select 选择记录
+    store-fake-ip: true           # 持久化 fake-ip
+
+# 自动同步时间以防止时间不准导致无法正常联网
+ntp:
+    enable: true
+    # 是否同步至系统时间，需要 root/管理员权限
+    write-to-system: false
+    server: time.windows.com
+    port: 123
+    interval: 30
+
+# 域名嗅探
+sniffer:
+    enable: true
+    sniff:
+      TLS:
+        ports: [443, 8443]
+      HTTP:
+        ports: [80, 8080-8880]
+        override-destination: true
+      QUIC:
+        ports: [443, 8443]        
+
+# tun 模式
+tun:
+    enable: true                    #PC端开启 路由器不开启
+    stack: system                   # gvisor / lwip                    
+    dns-hijack:                      # 需要劫持的 DNS
+        - "any:53"
+    auto-route: true                 # 自动设置全局路由，可以自动将全局流量路由进入tun网卡
+    auto-detect-interface: true      # 自动识别出口网卡
+
+# dns 设置
+# 已配置 ipv6
+dns:
+    enable: true
+    listen: :1053
+    ipv6: false
+    # 路由器个人建议使用 redir-host 以最佳兼容性
+    # 其他设备可以使用 fake-ip
+    enhanced-mode: fake-ip
+    fake-ip-range: 198.18.0.1/16
+    default-nameserver:
+        - 223.5.5.5
+        - 119.29.29.29
+        - 114.114.114.114
+    nameserver:
+        - https://doh.pub/dns-query
+        - https://dns.alidns.com/dns-query
+    proxy-server-nameserver:
+        - https://doh.pub/dns-query
+    nameserver-policy:
+        "geosite:cn,private":
+           - https://doh.pub/dns-query
+           - https://dns.alidns.com/dns-query
+        "geosite:geolocation-!cn":
+           - "https://dns.cloudflare.com/dns-query#dns"
+           - "https://dns.google/dns-query#dns"
+#节点存放地址
+proxies:
+
+#代理集  如果是自建节点屏蔽这里
+use: &use
+    type: select
+    use:
+       - 代理  
+proxy-providers:
+    #自定义机场名称subscribe_groups
+    代理:
+        type: http # http 的 path 可空置,默认储存路径为 homedir的proxies文件夹,文件名为url的md5
+        url: "" #订阅链接存放在双引号内
+        interval: 86400 #机场订阅自动更新时间 单位：秒
+        path: ./rule_provider/paolu.yaml # 默认只允许存储在 clash 的 Home Dir，如果想存储到任意位置，添加环境变量 SKIP_SAFE_PATH_CHECK=1
+        health-check:
+            enable: true
+            interval: 300
+            # lazy: true
+            url: https://www.gstatic.com/generate_204
+        override:
+            skip-cert-verify: true  
+            udp: true
+        filter: "^((?!更新|剩余|流量|提示|官网).)*$"   
+
+
+#代理组
+proxy-groups:    
+#📺bilibili
+    - name: "📺Bilibili"
+      proxies:
+      - DIRECT
+      <<: *use 
+      filter: ^(?!.*GAME).*(香港|HK|Hong Kong|TW|台|台湾).*$
+#👀Twitch
+    - name: "👀Twitch"
+      proxies:
+      - 🇭🇰 香港节点
+      <<: *use 
+      filter: "^(?!.*GAME).*(香港|HK|Hong Kong|TW|台|台湾).*$"
+#🎞️动画疯
+    - name: "🎞️动画疯"
+      <<: *use 
+      filter: "TW|台湾"
+#🔥OpenAI
+    - name: "🔥OpenAI"
+      <<: *use 
+      filter: "新加坡|SG|狮城|JP|日本|美|美国|USA"  
+#🍎Apple
+    - name: "🍎Apple"
+      proxies:
+      - DIRECT
+      <<: *use 
+      filter: "^(?!.*GAME).*(香港|HK||TW|台湾|日本|美国).*$"
+#🎥Youtube
+    - name: "🎥Youtube"
+      proxies:
+      - 🇭🇰 香港节点
+      <<: *use 
+      filter: "^(?!.*GAME).*(香港|HK|Hong Kong|TW|台湾|JP|日本|美国|USA).*$"
+#🎮游戏平台
+    - name: "🎮游戏平台"
+      proxies:
+      - DIRECT
+      <<: *use 
+      filter: "^(?!.*GAME).*(香港|台湾|阿根廷|新加坡|日本|美国).*$"
+#🎮🕹️游戏加速
+    - name: "🕹️游戏加速"
+      proxies:
+      - DIRECT
+      <<: *use 
+      filter: "GAME|游戏|game|香港" 
+#🎮🎬Netflix
+    - name: "🎬Netflix"
+      proxies:
+      - 🇸🇬 狮城节点
+      <<: *use 
+      filter: "TW|台|台湾|新加坡|SG|狮城|美|美国|USA|JP|日本"   
+#🇭🇰 香港节点
+    - name: "🇭🇰 香港节点"
+      type: url-test
+      use:
+          - 代理
+      url: 'https://www.gstatic.com/generate_204'
+      interval: 300
+      tolerance: 50
+      filter: "^(?!.*GAME).*(香港|HK|Hong Kong).*$" 
+#🇸🇬 狮城节点
+    - name: "🇸🇬 狮城节点"
+      type: fallback
+      use:
+          - 代理
+      url: 'https://www.gstatic.com/generate_204'
+      interval: 300
+      filter: "sg|新加坡"
+#✈️机场配置
+    - name: "✈️机场配置"
+      proxies:
+      - DIRECT
+      - 🇭🇰 香港节点
+      - 🇸🇬 狮城节点
+      <<: *use 
+      
+#规则集
+rule-providers:           
+    applications:
+        type: http
+        behavior: classical
+        interval: 86400
+        path: ./ruleset/applications.yaml
+        url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/applications.txt"  
+    OpenAI:      
+        type: http
+        behavior: classical
+        interval: 86400
+        path: ./ruleset/OpenAI.yaml
+        url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/OpenAI/OpenAI_No_Resolve.yaml"
+    BardAI:      
+        type: http
+        behavior: classical
+        interval: 86400
+        path: ./ruleset/BardAI.yaml
+        url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/BardAI/BardAI.yaml"
+# anti-AD 广告拦截规则
+# https://github.com/privacy-protection-tools/anti-AD
+# 如果误杀率高请自行更换
+#    anti-AD:
+#      type: http
+#      behavior: domain
+#      format: yaml
+# path可为空(仅限clash.meta 1.15.0以上版本)
+#      path: ./rule_provider/anti-AD.yaml
+#      url: "https://raw.githubusercontent.com/privacy-protection-tools/anti-AD/master/anti-ad-clash.yaml?"
+#      interval: 600
+# anti-AD 白名单规则
+#    anti-AD-white:
+#      type: http
+#      behavior: domain
+#      format: yaml
+# path可为空(仅限clash.meta 1.15.0以上版本)
+#      path: ./rule_provider/anti-AD-white.yaml
+#      url: "https://raw.githubusercontent.com/privacy-protection-tools/dead-horse/master/anti-ad-white-for-clash.yaml?"
+#      interval: 600
+rules:
+#域名规则
+  # 防止 YouTube 等使用 QUIC 导致速度不佳, 禁用 443 端口 UDP 流量（不包括国内）
+  # - AND,(AND,(DST-PORT,443),(NETWORK,UDP)),(NOT,((GEOIP,CN))),REJECT # quic
+  # - AND,((RULE-SET,anti-AD),(NOT,((RULE-SET,anti-AD-white)))),广告拦截
+    - RULE-SET,applications,DIRECT
+    - GEOSITE,microsoft@cn,DIRECT 
+    - GEOSITE,steam@cn,DIRECT
+    - GEOSITE,category-games@cn,DIRECT 
+#在这里添加自定义直连规则
+    - DOMAIN,xn--ngstr-lra8j.com,✈️机场配置
+    - DOMAIN,services.googleapis.cn,✈️机场配置
+    - DOMAIN,mtalk.google.com,✈️机场配置
+    - DOMAIN-SUFFIX,voidsec.com,✈️机场配置   #voidsec 礼貌性添加所谓的dns泄露检测站
+    - DOMAIN-SUFFIX,browserleaks.com,✈️机场配置 #browserleaks 礼貌性添加所谓的dns泄露检测站
+    - DOMAIN-SUFFIX,ipleak.net,✈️机场配置 #ipleak 礼貌性添加所谓的dns泄露检测站
+#自定义域名规则
+    - GEOSITE,bilibili,📺Bilibili
+    - GEOSITE,twitch,👀Twitch
+    - GEOSITE,bahamut,🎞️动画疯
+    - RULE-SET,OpenAI,🔥OpenAI
+    - RULE-SET,BardAI,🔥OpenAI
+    - GEOSITE,apple,🍎Apple
+    - GEOSITE,apple-cn,🍎Apple
+    - GEOSITE,youtube,🎥Youtube
+    - GEOSITE,blizzard,🎮游戏平台
+    - GEOSITE,steam,🎮游戏平台
+    - GEOSITE,xbox,🎮游戏平台
+    - GEOSITE,netflix,🎬Netflix
+    - GEOSITE,telegram,✈️机场配置
+    - GEOSITE,twitter,✈️机场配置
+    - GEOSITE,google,✈️机场配置
+    - GEOSITE,google-cn,✈️机场配置   # Google CN 不走代理会导致香港等地区节点 Play Store 异常
+    - GEOSITE,CN,DIRECT    
+#IP规则
+    - GEOIP,lan,DIRECT,no-resolve
+    - GEOIP,PRIVATE,DIRECT,no-resolve
+    - GEOIP,netflix,🎬Netflix
+    - GEOIP,telegram,✈️机场配置
+    - GEOIP,twitter,✈️机场配置
+    - GEOIP,google,✈️机场配置
+    - GEOIP,CN,DIRECT
+    #最终匹配 白名单模式
+    - MATCH,✈️机场配置   
