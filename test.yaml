@@ -1,5 +1,5 @@
 mode: rule
-# ipv6 支持
+# ipv6 不支持
 ipv6: false
 log-level: info
 # 允许局域网连接
@@ -15,6 +15,9 @@ unified-delay: true
 tcp-concurrent: true
 # 外部控制端口
 external-controller: :9090
+#external-ui: /path/to/ui
+#external-ui-name: xd
+#external-ui-url: "https://github.com/MetaCubeX/metacubexd/archive/refs/heads/gh-pages.zip"
 
 geodata-mode: true
 
@@ -60,44 +63,46 @@ sniffer:
       HTTP:
         ports: [80, 8080-8880]
         override-destination: true
-      QUIC:
-        ports: [443, 8443]        
+    #   QUIC:
+    #     ports: [443, 8443]        
+#Openclash已经开启tun同时用mosdns代理DNS,
+# # tun 模式
+# tun:
+#     enable: false                    #PC端开启 路由器不开启
+#     stack: system                   # gvisor / lwip                    
+#     dns-hijack:                      # 需要劫持的 DNS
+#         - "any:53"
+#     auto-route: true                 # 自动设置全局路由，可以自动将全局流量路由进入tun网卡
+#     auto-detect-interface: true      # 自动识别出口网卡
 
-# tun 模式
-tun:
-    enable: true                    #PC端开启 路由器不开启
-    stack: system                   # gvisor / lwip                    
-    dns-hijack:                      # 需要劫持的 DNS
-        - "any:53"
-    auto-route: true                 # 自动设置全局路由，可以自动将全局流量路由进入tun网卡
-    auto-detect-interface: true      # 自动识别出口网卡
-
-# dns 设置
-# 已配置 ipv6
-dns:
-    enable: true
-    listen: :1053
-    ipv6: false
-    # 路由器个人建议使用 redir-host 以最佳兼容性
-    # 其他设备可以使用 fake-ip
-    enhanced-mode: fake-ip
-    fake-ip-range: 198.18.0.1/16
-    default-nameserver:
-        - 223.5.5.5
-        - 119.29.29.29
-        - 114.114.114.114
-    nameserver:
-        - https://doh.pub/dns-query
-        - https://dns.alidns.com/dns-query
-    proxy-server-nameserver:
-        - https://doh.pub/dns-query
-    nameserver-policy:
-        "geosite:cn,private":
-           - https://doh.pub/dns-query
-           - https://dns.alidns.com/dns-query
-        "geosite:geolocation-!cn":
-           - "https://dns.cloudflare.com/dns-query#dns"
-           - "https://dns.google/dns-query#dns"
+# # dns 设置
+# dns:
+#     enable: true
+#     prefer-h3: true                   # 开启 DoH 支持 HTTP/3，将并发尝试
+#     listen: :1053
+#     ipv6: false
+#     # 路由器个人建议使用 redir-host 以最佳兼容性
+#     # 其他设备可以使用 fake-ip
+#     enhanced-mode: fake-ip
+#     fake-ip-range: 198.18.0.1/16
+#     fake-ip-filter:  ['+.*']
+#     default-nameserver:
+#         - 223.5.5.5
+#         - 119.29.29.29
+#         - 114.114.114.114
+#     nameserver:
+#         - 114.114.114.114
+#         - tls://223.5.5.5:853
+#         - https://dns.alidns.com/dns-query#h3=true
+#     # proxy-server-nameserver:
+#     #     - https://doh.pub/dns-query
+#     nameserver-policy:
+#         "geosite:cn,private":
+#            - https://doh.pub/dns-query
+#            - https://dns.alidns.com/dns-query
+#         "geosite:geolocation-!cn":
+#            - "https://dns.cloudflare.com/dns-query#dns"
+#            - "https://dns.google/dns-query#dns"
 #节点存放地址
 proxies:
 
@@ -110,7 +115,7 @@ proxy-providers:
     #自定义机场名称subscribe_groups
     代理:
         type: http # http 的 path 可空置,默认储存路径为 homedir的proxies文件夹,文件名为url的md5
-        url: "" #订阅链接存放在双引号内
+        url: "要用clash/meta订阅！！" #订阅链接存放在双引号内
         interval: 86400 #机场订阅自动更新时间 单位：秒
         path: ./rule_provider/paolu.yaml # 默认只允许存储在 clash 的 Home Dir，如果想存储到任意位置，添加环境变量 SKIP_SAFE_PATH_CHECK=1
         health-check:
@@ -131,17 +136,17 @@ proxy-groups:
       proxies:
       - DIRECT
       <<: *use 
-      filter: ^(?!.*GAME).*(香港|HK|Hong Kong|TW|台|台湾).*$
+      filter: ^(?!.*GAME).*(香港|台湾).*$
 #👀Twitch
     - name: "👀Twitch"
       proxies:
       - 🇭🇰 香港节点
       <<: *use 
-      filter: "^(?!.*GAME).*(香港|HK|Hong Kong|TW|台|台湾).*$"
+      filter: "^(?!.*GAME).*(香港|台湾).*$"
 #🎞️动画疯
     - name: "🎞️动画疯"
       <<: *use 
-      filter: "TW|台湾"
+      filter: "台湾"
 #🔥OpenAI
     - name: "🔥OpenAI"
       <<: *use 
@@ -192,7 +197,7 @@ proxy-groups:
           - 代理
       url: 'https://www.gstatic.com/generate_204'
       interval: 300
-      filter: "sg|新加坡"
+      filter: "新加坡"
 #✈️机场配置
     - name: "✈️机场配置"
       proxies:
@@ -207,20 +212,21 @@ rule-providers:
         type: http
         behavior: classical
         interval: 86400
-        path: ./ruleset/applications.yaml
+        path: ./rule_provider/applications.yaml
         url: "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/applications.txt"  
     OpenAI:      
         type: http
         behavior: classical
         interval: 86400
-        path: ./ruleset/OpenAI.yaml
+        path: ./rule_provider/OpenAI.yaml
         url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/OpenAI/OpenAI_No_Resolve.yaml"
     BardAI:      
         type: http
         behavior: classical
         interval: 86400
-        path: ./ruleset/BardAI.yaml
+        path: ./rule_provider/BardAI.yaml
         url: "https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/BardAI/BardAI.yaml"
+
 # anti-AD 广告拦截规则
 # https://github.com/privacy-protection-tools/anti-AD
 # 如果误杀率高请自行更换
@@ -266,7 +272,7 @@ rules:
     - RULE-SET,OpenAI,🔥OpenAI
     - RULE-SET,BardAI,🔥OpenAI
     - GEOSITE,apple,🍎Apple
-    - GEOSITE,apple-cn,🍎Apple
+    - GEOSITE,apple@cn,🍎Apple
     - GEOSITE,youtube,🎥Youtube
     - GEOSITE,blizzard,🎮游戏平台
     - GEOSITE,steam,🎮游戏平台
@@ -275,7 +281,7 @@ rules:
     - GEOSITE,telegram,✈️机场配置
     - GEOSITE,twitter,✈️机场配置
     - GEOSITE,google,✈️机场配置
-    - GEOSITE,google-cn,✈️机场配置   # Google CN 不走代理会导致香港等地区节点 Play Store 异常
+    - GEOSITE,google@cn,✈️机场配置   # Google CN 不走代理会导致香港等地区节点 Play Store 异常
     - GEOSITE,CN,DIRECT    
 #IP规则
     - GEOIP,lan,DIRECT,no-resolve
