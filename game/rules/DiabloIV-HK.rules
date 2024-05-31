@@ -1,5 +1,12 @@
-
+#DiabloIV-HK,暗黑破坏神4-港服,暗黑手游不朽,By-DMZhang
 payload:
+#暗黑手游不朽进程
+  - DOMAIN-SUFFIX,easebar.com
+  - DOMAIN-SUFFIX,swrve.com
+#暗黑4游戏进程
+  - PROCESS-NAME,Diablo IV.exe
+  - PROCESS-NAME,Diablo IV Launcher.exe
+#暗黑4,IP匹配
   - IP-CIDR,34.0.96.0/19
   - IP-CIDR,34.22.64.0/19
   - IP-CIDR,34.22.96.0/20
