@@ -6,13 +6,9 @@ payload:
 #暗黑4游戏进程
   - PROCESS-NAME,Diablo IV.exe
   - PROCESS-NAME,Diablo IV Launcher.exe
-  - PROCESS-NAME,Last Epoch.exe
 #['Last Epoch.exe'],0,0,1,0,1,0,By-ip_crawl_tool
-  - IP-CIDR,198.18.6.0/24
   - IP-CIDR,119.42.62.0/24
   - IP-CIDR,94.242.217.0/24
-  - IP-CIDR,198.18.4.0/24
-  - IP-CIDR,198.18.14.0/24
 #暗黑4IP匹配
   - IP-CIDR,34.0.96.0/19
   - IP-CIDR,103.4.114.0/24
