@@ -1,6 +1,8 @@
 #火炬之光無限,steam服,By-JOnney
 payload:
+#火炬之光进程
   - PROCESS-NAME,torchlight_infinite.exe
+#火炬之光IP匹配
   - 8.214.176.0/24
   - 8.219.48.45/32
   - 8.219.121.0/24
