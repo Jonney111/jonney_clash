@@ -1,5 +1,6 @@
 #火炬之光無限,steam服,By-JOnney
 payload:
+  - PROCESS-NAME,torchlight_infinite.exe
   - 8.214.176.0/24
   - 8.219.48.45/32
   - 8.219.121.0/24
