@@ -3,6 +3,9 @@ payload:
 #暗黑手游不朽进程
   - DOMAIN-SUFFIX,easebar.com
   - DOMAIN-SUFFIX,swrve.com
+#暗黑2重制版
+  - PROCESS-NAME,D2R.exe
+  - PROCESS-NAME,Diablo II Resurrected Launcher.exe
 #暗黑3游戏进程
   - PROCESS-NAME,Diablo III.exe
   - PROCESS-NAME,Diablo III Launcher.exe
