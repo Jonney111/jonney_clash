@@ -11,6 +11,7 @@
 | 1024_hosts                 | https://cdn.jsdelivr.net/gh/Goooler/1024_hosts@master/hosts  | host去除法                                                   |
 | adgk手机去广告规则         | https://cdn.jsdelivr.net/gh/banbendalao/ADgk@master/ADgk.txt | 手机代码去广告，手机版本推荐订阅                             |
 ## 2. 允许
+| -------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | AdGuardSDNSFilterDirect    | https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/master/rule/Clash/AdGuardSDNSFilter/Direct/Direct.list | 允许列表      |
 
 ## 上游 DNS 服务器
