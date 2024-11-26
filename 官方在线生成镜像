@@ -6,13 +6,16 @@ luci-i18n-base-zh-cn luci-i18n-opkg-zh-cn luci-i18n-firewall-zh-cn luci-i18n-tty
 coreutils-nohup bash iptables dnsmasq-full curl ca-certificates ipset ip-full iptables-mod-tproxy iptables-mod-extra libcap libcap-bin ruby ruby-yaml kmod-tun kmod-inet-diag unzip luci-compat luci-base
 #mosdns依赖
 v2ray-geosite v2ray-geoip
-#挂载点
+#挂载点 diskman
 block-mount fdisk e2fsprogs lsblk kmod-fs-btrfs
 #sftp传输
 openssh-sftp-server
+#adguardhome
+
 #总结
 base-files busybox ca-bundle dropbear e2fsprogs firewall4 fstools grub2-bios-setup kmod-button-hotplug kmod-nft-offload libc libgcc libustream-mbedtls logd mkf2fs mtd netifd nftables odhcp6c odhcpd-ipv6only opkg partx-utils ppp ppp-mod-pppoe procd procd-seccomp procd-ujail uci uclient-fetch urandom-seed urngd kmod-amazon-ena kmod-amd-xgbe kmod-bnx2 kmod-e1000e kmod-e1000 kmod-forcedeth kmod-fs-vfat kmod-igb kmod-igc kmod-ixgbe kmod-r8169 kmod-tg3 luci luci-i18n-base-zh-cn luci-i18n-opkg-zh-cn luci-i18n-firewall-zh-cn luci-i18n-ttyd-zh-cn luci-app-ttyd kmod-vmxnet3
 coreutils-nohup bash iptables dnsmasq-full curl ca-certificates ipset ip-full iptables-mod-tproxy iptables-mod-extra libcap libcap-bin ruby ruby-yaml kmod-tun kmod-inet-diag unzip luci-compat luci-base v2ray-geosite v2ray-geoip block-mount fdisk openssh-sftp-server kmod-fs-btrfs
+
 
 #uci-defaults 的运行脚本
 # Set timezone to Asia/Shanghai
@@ -20,7 +23,7 @@ uci set system.@system[0].timezone='CST-8'
 uci set system.@system[0].zonename='Asia/Shanghai'
 uci commit system
 
-# Modify /etc/opkg/customfeeds.conf with ImmortalWrt sources
+# Modify /etc/opkg/customfeeds.conf with Kwrt sources
 if [ -f /etc/opkg/customfeeds.conf ]; then
   cat <<EOF > /etc/opkg/customfeeds.conf
 src/gz kwrt_base https://dl.openwrt.ai/packages-24.10/x86_64/base
@@ -34,6 +37,53 @@ fi
 
 # # 注释掉 "option check_signature"
 if [ -f /etc/opkg.conf ]; then
-    # 注释掉 "option check_signature"
     sed -i 's/^option check_signature/#option check_signature/' /etc/opkg.conf
 fi
+
+# 动态设置 LAN 网关和 DNS
+lan_ip_address="0.0.0.0"
+lan_gateway="0.0.0.0"
+lan_dns="0.0.0.0"
+# 应用到网络配置
+uci set network.lan.ipaddr="$lan_ip_address"
+uci set network.lan.gateway="$lan_gateway"
+uci set network.lan.dns="$lan_dns"
+# 提交配置更改
+uci commit network
+
+# 设置 root 用户密码
+password="passwoed"
+# 使用 `passwd` 设置密码
+if [ -n "$password" ]; then
+  (echo "$password"; sleep 1; echo "$password") | passwd > /dev/null
+fi
+
+#将默认 shell 从 ash 切换到 bash
+if command -v bash >/dev/null 2>&1; then
+  # 更新 /etc/passwd 文件，将 root 用户的 shell 修改为 /bin/bash
+  sed -i 's#/bin/ash#/bin/bash#g' /etc/passwd
+fi
+
+# 配置 ttyd 自动登录
+uci batch <<EOF
+set ttyd.@ttyd[0].command='/bin/login -f root'
+commit ttyd
+EOF
+
+#修改登录提示信息
+cat << EOF > /etc/banner
+  _______                     ________        __
+ |       |.-----.-----.-----.|  |  |  |.----.|  |_
+ |   -   ||  _  |  -__|     ||  |  |  ||   _||   _|
+ |_______||   __|_____|__|__||________||__|  |____|
+          |__|            
+                             by   J O N N E Y 
+ -----------------------------------------------------
+ 欢 迎 使 用 OpenWrt !
+ -----------------------------------------------------
+                      系 统 信 息
+ -----------------------------------------------------                   
+ 固件信息: $(grep OPENWRT_RELEASE /etc/os-release | cut -d '"' -f2)
+ 内核版本: $(uname -r)
+ 日期时间: $(date +"%Y-%m-%d %H:%M:%S")
+EOF
