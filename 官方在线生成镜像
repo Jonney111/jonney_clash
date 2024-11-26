@@ -1,0 +1,37 @@
+#OpenWrt
+luci-i18n-base-zh-cn luci-i18n-opkg-zh-cn luci-i18n-firewall-zh-cn luci-i18n-ttyd-zh-cn luci-app-ttyd kmod-vmxnet3
+#opclash依赖
+coreutils-nohup bash iptables dnsmasq-full curl ca-certificates ipset ip-full iptables-mod-tproxy iptables-mod-extra libcap libcap-bin ruby ruby-yaml kmod-tun kmod-inet-diag unzip luci-compat luci-base
+#mosdns依赖
+v2ray-geosite v2ray-geoip
+#挂载点
+block-mount fdisk e2fsprogs lsblk kmod-fs-btrfs
+#sftp传输
+openssh-sftp-server
+#总结
+base-files busybox ca-bundle dropbear e2fsprogs firewall4 fstools grub2-bios-setup kmod-button-hotplug kmod-nft-offload libc libgcc libustream-mbedtls logd mkf2fs mtd netifd nftables odhcp6c odhcpd-ipv6only opkg partx-utils ppp ppp-mod-pppoe procd procd-seccomp procd-ujail uci uclient-fetch urandom-seed urngd kmod-amazon-ena kmod-amd-xgbe kmod-bnx2 kmod-e1000e kmod-e1000 kmod-forcedeth kmod-fs-vfat kmod-igb kmod-igc kmod-ixgbe kmod-r8169 kmod-tg3 luci luci-i18n-base-zh-cn luci-i18n-opkg-zh-cn luci-i18n-firewall-zh-cn luci-i18n-ttyd-zh-cn luci-app-ttyd kmod-vmxnet3
+coreutils-nohup bash iptables dnsmasq-full curl ca-certificates ipset ip-full iptables-mod-tproxy iptables-mod-extra libcap libcap-bin ruby ruby-yaml kmod-tun kmod-inet-diag unzip luci-compat luci-base v2ray-geosite v2ray-geoip block-mount fdisk openssh-sftp-server kmod-fs-btrfs
+
+#uci-defaults 的运行脚本
+# Set timezone to Asia/Shanghai
+uci set system.@system[0].timezone='CST-8'
+uci set system.@system[0].zonename='Asia/Shanghai'
+uci commit system
+
+# Modify /etc/opkg/customfeeds.conf with ImmortalWrt sources
+if [ -f /etc/opkg/customfeeds.conf ]; then
+  cat <<EOF > /etc/opkg/customfeeds.conf
+src/gz kwrt_base https://dl.openwrt.ai/packages-24.10/x86_64/base
+src/gz kwrt_packages https://dl.openwrt.ai/packages-24.10/x86_64/packages
+src/gz kwrt_luci https://dl.openwrt.ai/packages-24.10/x86_64/luci
+src/gz kwrt_routing https://dl.openwrt.ai/packages-24.10/x86_64/routing
+src/gz kwrt_telephony https://dl.openwrt.ai/packages-24.10/x86_64/telephony
+src/gz kwrt_kiddin9 https://dl.openwrt.ai/packages-24.10/x86_64/kiddin9
+EOF
+fi
+
+# # 注释掉 "option check_signature"
+if [ -f /etc/opkg.conf ]; then
+    # 注释掉 "option check_signature"
+    sed -i 's/^option check_signature/#option check_signature/' /etc/opkg.conf
+fi
