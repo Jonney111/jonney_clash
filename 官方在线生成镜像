@@ -52,7 +52,7 @@ uci set network.lan.dns="$lan_dns"
 uci commit network
 
 # 设置 root 用户密码
-password="passwoed"
+password="password"
 # 使用 `passwd` 设置密码
 if [ -n "$password" ]; then
   (echo "$password"; sleep 1; echo "$password") | passwd > /dev/null
