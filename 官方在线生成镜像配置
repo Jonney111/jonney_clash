@@ -112,23 +112,24 @@ BLUE='\033[34m'
 RESET='\033[0m'  # 重置颜色
 
 cat << EOF > /etc/banner
-${CYAN} ____                 _       __     __ 
-      / __ \\____  ___  ____| |     / /____/ /_
-     / / / / __ \\/ _ \\/ __ \\ | /| / / ___/ __/
-    / /_/ / /_/ /  __/ / / / |/ |/ / /  / /_  
-    \\____/ .___/\\___/_/ /_/|__/|__/_/   \\__/  
-        /_/ ${RESET}
+${CYAN}        ____                 _       __     __ 
+       / __ \\____  ___  ____| |     / /____/ /_
+      / / / / __ \\/ _ \\/ __ \\ | /| / / ___/ __/
+     / /_/ / /_/ /  __/ / / / |/ |/ / /  / /_  
+     \\____/ .___/\\___/_/ /_/|__/|__/_/   \\__/  
+         /_/ ${RESET}
 ${GREEN}                                 by   J O N N E Y${RESET}
 ${YELLOW} -----------------------------------------------------${RESET}
 ${BLUE} 欢 迎 使 用 OpenWrt !${RESET}
 ${YELLOW} -----------------------------------------------------${RESET}
-                      ${RED}系 统 信 息${RESET}
+                       ${RED}系 统 信 息${RESET}
 ${YELLOW} -----------------------------------------------------${RESET}                   
-${CYAN} 固件信息:${RESET} $(grep DISTRIB_DESCRIPTION /etc/openwrt_release | cut -d "'" -f2)
-${CYAN} 内核版本:${RESET} $(uname -r)
-${CYAN} 处理信息:${RESET} $cpu_info
-${CYAN} 日期时间:${RESET} $(date +"%Y-%m-%d %H:%M:%S")
+${CYAN} 固件信息: ${RESET}$(grep DISTRIB_DESCRIPTION /etc/openwrt_release | cut -d "'" -f2)
+${CYAN} 内核版本: ${RESET}$(uname -r)
+${CYAN} CPU 信息: ${RESET}$cpu_info
+${CYAN} 日期时间: ${RESET}$(date +"%Y-%m-%d %H:%M:%S")
 EOF
+
 
 
 
