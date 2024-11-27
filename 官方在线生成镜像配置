@@ -1,5 +1,3 @@
-#在线网站
-https://firmware-selector.openwrt.org/
 #OpenWrt
 luci-i18n-base-zh-cn luci-i18n-opkg-zh-cn luci-i18n-firewall-zh-cn luci-i18n-ttyd-zh-cn luci-app-ttyd kmod-vmxnet3
 #opclash依赖
@@ -10,11 +8,11 @@ v2ray-geosite v2ray-geoip
 block-mount fdisk e2fsprogs lsblk kmod-fs-btrfs
 #sftp传输
 openssh-sftp-server
-#adguardhome
-
+#passwall
+kmod-nft-socket kmod-nft-tproxy
 #总结
 base-files busybox ca-bundle dropbear e2fsprogs firewall4 fstools grub2-bios-setup kmod-button-hotplug kmod-nft-offload libc libgcc libustream-mbedtls logd mkf2fs mtd netifd nftables odhcp6c odhcpd-ipv6only opkg partx-utils ppp ppp-mod-pppoe procd procd-seccomp procd-ujail uci uclient-fetch urandom-seed urngd kmod-amazon-ena kmod-amd-xgbe kmod-bnx2 kmod-e1000e kmod-e1000 kmod-forcedeth kmod-fs-vfat kmod-igb kmod-igc kmod-ixgbe kmod-r8169 kmod-tg3 luci luci-i18n-base-zh-cn luci-i18n-opkg-zh-cn luci-i18n-firewall-zh-cn luci-i18n-ttyd-zh-cn luci-app-ttyd kmod-vmxnet3
-coreutils-nohup bash iptables dnsmasq-full curl ca-certificates ipset ip-full iptables-mod-tproxy iptables-mod-extra libcap libcap-bin ruby ruby-yaml kmod-tun kmod-inet-diag unzip luci-compat luci-base v2ray-geosite v2ray-geoip block-mount fdisk openssh-sftp-server kmod-fs-btrfs
+coreutils-nohup bash iptables dnsmasq-full curl ca-certificates ipset ip-full iptables-mod-tproxy iptables-mod-extra libcap libcap-bin ruby ruby-yaml kmod-tun kmod-inet-diag unzip luci-compat luci-base v2ray-geosite v2ray-geoip block-mount fdisk openssh-sftp-server kmod-fs-btrfs kmod-nft-socket kmod-nft-tproxy
 
 
 #uci-defaults 的运行脚本
@@ -40,10 +38,10 @@ if [ -f /etc/opkg.conf ]; then
     sed -i 's/^option check_signature/#option check_signature/' /etc/opkg.conf
 fi
 
-# 动态设置 LAN 网关和 DNS
-lan_ip_address="0.0.0.0"
-lan_gateway="0.0.0.0"
-lan_dns="0.0.0.0"
+# 设置 LAN 静态ip,网关和 DNS
+lan_ip_address="10.10.10.2"
+lan_gateway="10.10.10.1"
+lan_dns="10.10.10.1"
 # 应用到网络配置
 uci set network.lan.ipaddr="$lan_ip_address"
 uci set network.lan.gateway="$lan_gateway"
@@ -52,7 +50,7 @@ uci set network.lan.dns="$lan_dns"
 uci commit network
 
 # 设置 root 用户密码
-password="password"
+password="794300"
 # 使用 `passwd` 设置密码
 if [ -n "$password" ]; then
   (echo "$password"; sleep 1; echo "$password") | passwd > /dev/null
@@ -70,42 +68,67 @@ set ttyd.@ttyd[0].command='/bin/login -f root'
 commit ttyd
 EOF
 
-#配置 lan口dhcp,以及ipv6
+#配置lan口dhcp开关,以及ipv6开关
 dhcp_enabled=0  # 设置为 1 启用 DHCP，设置为 0 禁用 DHCP
 ipv6_enabled=0  # 设置为 1 启用 IPv6，设置为 0 禁用 IPv6
 
-# 配置 LAN口DHCP
+# 配置 LAN 口 DHCP 和静态 IP
 if [ "$dhcp_enabled" -eq 1 ]; then
-    uci set network.lan.proto='dhcp'  # 启用 DHCP
-    uci set network.lan.ip6assign='60'  # 启用 IPv6 地址分配
+    echo "启用 DHCP..."
+    uci set dhcp.lan.ignore='0'           # 启用 DHCP
 else
-    uci set network.lan.proto='static'  # 禁用 DHCP，使用静态 IP
-    uci set network.lan.ip6assign='0'   # 禁用 IPv6 地址分配
+    echo "禁用 DHCP..."
+    uci set dhcp.lan.ignore='1'           # 禁用 DHCP
 fi
 
 # 配置 IPv6
 if [ "$ipv6_enabled" -eq 1 ]; then
-    uci set network.lan.ipv6='1'  # 启用 IPv6
+    echo "启用 IPv6..."
+    uci set dhcp.lan.dhcpv6='server'      # 启用 DHCPv6
+    uci set dhcp.lan.ra='server'          # 启用路由通告 (RA)
+    uci set dhcp.lan.ra_management='1'    # 设置 IPv6 为 stateful 模式
+    uci set dhcp.lan.ra_default='1'       # 设置默认路由通告
 else
-    uci set network.lan.ipv6='0'  # 禁用 IPv6
+    echo "禁用 IPv6..."
+    uci set dhcp.lan.dhcpv6='disabled'    # 禁用 DHCPv6
+    uci set dhcp.lan.ra='disabled'        # 禁用路由通告
+    uci delete dhcp.lan.ra_management     # 删除多余配置（可选）
+    uci delete dhcp.lan.ra_default        # 删除多余配置（可选）
 fi
 # 提交配置更改
-uci commit network
+uci commit dhcp
 
-#修改登录提示信息
+# 修改登录提示信息
+cpu_arch=$(grep DISTRIB_ARCH /etc/openwrt_release | cut -d "'" -f2)
+cpu_model=$(grep "model name" /proc/cpuinfo | uniq | awk -F ': ' '{print $2}')
+cpu_info="$cpu_arch, $cpu_model"
+
+# 定义颜色代码
+CYAN='\033[36m'
+YELLOW='\033[33m'
+RED='\033[31m'
+GREEN='\033[32m'
+BLUE='\033[34m'
+RESET='\033[0m'  # 重置颜色
+
 cat << EOF > /etc/banner
-  _______                     ________        __
- |       |.-----.-----.-----.|  |  |  |.----.|  |_
- |   -   ||  _  |  -__|     ||  |  |  ||   _||   _|
- |_______||   __|_____|__|__||________||__|  |____|
-          |__|            
-                             by   J O N N E Y 
- -----------------------------------------------------
- 欢 迎 使 用 OpenWrt !
- -----------------------------------------------------
-                      系 统 信 息
- -----------------------------------------------------                   
- 固件信息: $(grep OPENWRT_RELEASE /etc/os-release | cut -d '"' -f2)
- 内核版本: $(uname -r)
- 日期时间: $(date +"%Y-%m-%d %H:%M:%S")
+${CYAN}       ____                 _       __     __ 
+      / __ \\____  ___  ____| |     / /____/ /_
+     / / / / __ \\/ _ \\/ __ \\ | /| / / ___/ __/
+    / /_/ / /_/ /  __/ / / / |/ |/ / /  / /_  
+    \\____/ .___/\\___/_/ /_/|__/|__/_/   \\__/  
+        /_/ ${RESET}
+${GREEN}                                 by   J O N N E Y${RESET}
+${YELLOW} -----------------------------------------------------${RESET}
+${BLUE} 欢 迎 使 用 OpenWrt !${RESET}
+${YELLOW} -----------------------------------------------------${RESET}
+                      ${RED}系 统 信 息${RESET}
+${YELLOW} -----------------------------------------------------${RESET}                   
+${CYAN} 固件信息:${RESET} $(grep DISTRIB_DESCRIPTION /etc/openwrt_release | cut -d "'" -f2)
+${CYAN} 内核版本:${RESET} $(uname -r)
+${CYAN} 处理信息:${RESET} $cpu_info
+${CYAN} 日期时间:${RESET} $(date +"%Y-%m-%d %H:%M:%S")
 EOF
+
+
+
