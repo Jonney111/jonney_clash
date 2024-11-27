@@ -98,36 +98,29 @@ fi
 # 提交配置更改
 uci commit dhcp
 
-# 修改登录提示信息
+#修改登录提示信息
+# CPU 信息（架构 + 型号）
 cpu_arch=$(grep DISTRIB_ARCH /etc/openwrt_release | cut -d "'" -f2)
 cpu_model=$(grep "model name" /proc/cpuinfo | uniq | awk -F ': ' '{print $2}')
 cpu_info="$cpu_arch, $cpu_model"
 
-# 定义颜色代码
-CYAN='\033[36m'
-YELLOW='\033[33m'
-RED='\033[31m'
-GREEN='\033[32m'
-BLUE='\033[34m'
-RESET='\033[0m'  # 重置颜色
-
 cat << EOF > /etc/banner
-${CYAN}        ____                 _       __     __ 
-       / __ \\____  ___  ____| |     / /____/ /_
-      / / / / __ \\/ _ \\/ __ \\ | /| / / ___/ __/
-     / /_/ / /_/ /  __/ / / / |/ |/ / /  / /_  
-     \\____/ .___/\\___/_/ /_/|__/|__/_/   \\__/  
-         /_/ ${RESET}
-${GREEN}                                 by   J O N N E Y${RESET}
-${YELLOW} -----------------------------------------------------${RESET}
-${BLUE} 欢 迎 使 用 OpenWrt !${RESET}
-${YELLOW} -----------------------------------------------------${RESET}
-                       ${RED}系 统 信 息${RESET}
-${YELLOW} -----------------------------------------------------${RESET}                   
-${CYAN} 固件信息: ${RESET}$(grep DISTRIB_DESCRIPTION /etc/openwrt_release | cut -d "'" -f2)
-${CYAN} 内核版本: ${RESET}$(uname -r)
-${CYAN} CPU 信息: ${RESET}$cpu_info
-${CYAN} 日期时间: ${RESET}$(date +"%Y-%m-%d %H:%M:%S")
+       ____                 _       __     __ 
+      / __ \____  ___  ____| |     / /____/ /_
+     / / / / __ \/ _ \/ __ \ | /| / / ___/ __/
+    / /_/ / /_/ /  __/ / / / |/ |/ / /  / /_  
+    \____/ .___/\___/_/ /_/|__/|__/_/   \__/  
+        /_/                                                                                                                                                                              
+                                 by   J O N N E Y
+ -----------------------------------------------------
+ 欢 迎 使 用 OpenWrt !
+ -----------------------------------------------------
+                      系 统 信 息
+ -----------------------------------------------------                   
+ 固件信息: $(grep OPENWRT_RELEASE /etc/os-release | cut -d '"' -f2)
+ 内核版本: $(uname -r)
+ CPU 信息: $cpu_info
+ 日期时间: $(date +"%Y-%m-%d %H:%M:%S")
 EOF
 
 
