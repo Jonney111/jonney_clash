@@ -1,1 +1,9 @@
 
+docker build -t openwrt-compile .
+
+
+docker run -itd --name openwrt-compile \
+-p 3333:22 \
+-e USERNAME=usename \
+-e PASSWORD=password \
+openwrt-compile
