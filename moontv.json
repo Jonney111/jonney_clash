@@ -1,0 +1,45 @@
+{
+  "cache_time": 7200,
+  "api_site": {
+      "haohuazy":{
+        "api": "https://hhzyapi.com/api.php/provide/vod",
+        "name": "豪华资源",
+        "detail": "https://haohuazy.com/index.php/help/index.html"
+      },
+      "ckzy": {
+        "api": "https://ckzy.me/api.php/provide/vod",
+        "name": "CK资源",
+        "detail": "http://www.ckzy1.com"
+      },
+      "dyttzy": {
+        "api": "http://caiji.dyttzyapi.com/api.php/provide/vod",
+        "name": "天堂资源",
+        "detail": "http://dyttzy.tv"
+      },
+      "ryzy": {
+        "api": "https://cj.rycjapi.com/api.php/provide/vod",
+        "name": "如意资源",
+        "detail": "https://www.ryzy.tv/help"
+      },
+      "maoyanzy": {
+        "api": "https://api.maoyanapi.top/api.php/provide",
+        "name": "猫眼资源",
+        "detail": "https://www.maoyanzy.com"
+      },
+      "hongniuzy": {
+        "api": "https://www.hongniuzy2.com/api.php/provide/vod",
+        "name": "红牛资源",
+        "detail": "https://hongniuzy.tv/help"
+      },
+      "okzyw": {
+        "api": ":https://api.okzyw.net/api.php/provide/vod",
+        "name": "OK资源",
+        "detail": "https://okzyw.cc"
+      },
+      "sex8zy8": {
+        "api": "https://xingba222.com/api.php/provide",
+        "name": "杏吧资源",
+        "detail": "https://sex8zy8.com"
+      }
+    }    
+}
