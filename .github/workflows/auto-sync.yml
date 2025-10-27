@@ -1,0 +1,46 @@
+name: 🔄 Multi Repo Auto Sync
+
+on:
+  #schedule:
+    #- cron: '0 3 * * *'  # 每天北京时间 11:00 自动同步
+  #workflow_dispatch:      # 可手动触发
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        repos:
+          # 👇 在这里添加你要同步的仓库
+          - name: Solara
+            fork: Jonney111/Solara
+            upstream: akudamatata/Solara
+            branch: main
+          # 示例：你可以继续添加其他项目
+          # - name: ImmortalWrt
+          #   fork: Jonney111/immortalwrt
+          #   upstream: immortalwrt/immortalwrt
+          #   branch: master
+
+    steps:
+      - name: 🔍 Sync ${{ matrix.repos.name }}
+        run: |
+          echo "=== 🚀 Syncing ${{ matrix.repos.fork }} from ${{ matrix.repos.upstream }} ==="
+
+          git clone https://github.com/${{ matrix.repos.fork }}.git repo
+          cd repo
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git remote add upstream https://github.com/${{ matrix.repos.upstream }}.git
+          git fetch upstream
+
+          # 使用合并方式同步（保留你的修改）
+          git checkout ${{ matrix.repos.branch }}
+          git merge upstream/${{ matrix.repos.branch }} --allow-unrelated-histories -m "🔄 Sync from upstream" || echo "No changes to merge"
+
+          # 推送回你自己的仓库
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ matrix.repos.fork }} ${{ matrix.repos.branch }} || echo "✅ No new updates"
+
+          echo "=== ✅ Sync completed for ${{ matrix.repos.name }} ==="
