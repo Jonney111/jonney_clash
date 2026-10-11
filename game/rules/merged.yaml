@@ -1,5 +1,4 @@
-rules:
-  # --- Diablo IV 港服 (来源: DiabloIV-HK.rules, By-DMZhang) ---
+payload:
   - IP-CIDR,34.0.96.0/19
   - IP-CIDR,34.22.64.0/19
   - IP-CIDR,34.22.96.0/20
