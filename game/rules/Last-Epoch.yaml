@@ -7,3 +7,5 @@ payload:
  #POE2  
   - IP-CIDR,89.104.176.0/24
   - DOMAIN-SUFFIX,pathofexile2.com
+ #火炬之光无线  
+  - DOMAIN-SUFFIX,xdgtw.com
