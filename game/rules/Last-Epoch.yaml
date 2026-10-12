@@ -10,20 +10,17 @@ payload:
  #火炬之光无线  
   - DOMAIN-SUFFIX,xdgtw.com
  #暗黑3
-   # ---------- Google Cloud 段 (部分亚服实例) ----------
-  - IP-CIDR,34.64.0.0/10,no-resolve
-  - IP-CIDR,35.185.0.0/16,no-resolve
-  - IP-CIDR,35.194.0.0/15,no-resolve
-  - IP-CIDR,35.200.0.0/13,no-resolve
-  - IP-CIDR,35.220.0.0/14,no-resolve
-  - IP-CIDR,104.155.0.0/16,no-resolve
-  - IP-CIDR,104.198.0.0/15,no-resolve
-  - IP-CIDR,104.199.0.0/16,no-resolve
-  - IP-CIDR,130.211.240.0/20,no-resolve
-
-  # ---------- 其他可能出现的美服/欧服段 ----------
-  - IP-CIDR,12.129.0.0/16,no-resolve
-  - IP-CIDR,12.130.0.0/16,no-resolve
-  - IP-CIDR,63.241.0.0/16,no-resolve
-  # ---------- 台服段 ----------
-  - IP-CIDR,5.42.161.0/24
+  # ---------- 暗黑3 各地区服务器 IP 段 ----------
+  # 北美
+  - IP-CIDR,24.105.0.0/16,no-resolve
+  # 巴西
+  - IP-CIDR,54.94.0.0/16,no-resolve
+  # 欧洲
+  - IP-CIDR,185.60.112.0/24,no-resolve
+  # 韩国
+  - IP-CIDR,182.162.128.0/18,no-resolve
+  # 台湾
+  - IP-CIDR,5.42.161.0/24,no-resolve
+  - IP-CIDR,210.242.235.0/24,no-resolve
+  # 澳大利亚
+  - IP-CIDR,103.4.115.0/24,no-resolve
