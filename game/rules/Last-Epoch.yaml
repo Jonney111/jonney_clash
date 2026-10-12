@@ -28,3 +28,5 @@ payload:
   #韩国
   - IP-CIDR,117.89.176.0/20,no-resolve
   - IP-CIDR,185.60.112.0/20,no-resolve
+#暗黑不朽
+  - DOMAIN-SUFFIX,gph.easebar.com,DIRECT
