@@ -2,7 +2,7 @@ payload:
 #最后纪元
   - IP-CIDR,35.201.128.0/17,no-resolve
   - IP-CIDR,94.242.192.0/18,no-resolve
-  - DOMAIN-SUFFIX,lastepoch.com
+  #- DOMAIN-SUFFIX,lastepoch.com
   - DOMAIN-SUFFIX,playfabapi.com
  #POE2  
   - IP-CIDR,89.104.176.0/24,no-resolve
