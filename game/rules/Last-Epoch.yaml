@@ -6,6 +6,6 @@ payload:
   - DOMAIN-SUFFIX,playfabapi.com
  #POE2  
   - IP-CIDR,89.104.176.0/24,no-resolve
-  - DOMAIN-SUFFIX,pathofexile2.com
+  #- DOMAIN-SUFFIX,pathofexile2.com
  #火炬之光无线  
   - DOMAIN-SUFFIX,xdgtw.com
