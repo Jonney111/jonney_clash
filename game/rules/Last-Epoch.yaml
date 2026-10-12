@@ -24,3 +24,7 @@ payload:
   - IP-CIDR,210.242.235.0/24,no-resolve
   # 澳大利亚
   - IP-CIDR,103.4.115.0/24,no-resolve
+#暗黑2重置版本
+  #韩国
+  - IP-CIDR,117.89.176.0/20,no-resolve
+  - IP-CIDR,185.60.112.0/20,no-resolve
