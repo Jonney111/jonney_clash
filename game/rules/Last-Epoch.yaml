@@ -9,3 +9,6 @@ payload:
   #- DOMAIN-SUFFIX,pathofexile2.com
  #火炬之光无线  
   - DOMAIN-SUFFIX,xdgtw.com
+ #暗黑3
+  #台服务
+  - IP-CIDR,5.42.161.0/24
