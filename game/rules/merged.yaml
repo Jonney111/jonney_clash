@@ -2,6 +2,7 @@ payload:
   - IP-CIDR,34.0.96.0/19,no-resolve
   - IP-CIDR,34.22.64.0/19,no-resolve
   - IP-CIDR,34.22.96.0/20,no-resolve
+  - IP-CIDR,34.40.160.0/20,no-resolve
   - IP-CIDR,34.64.32.0/19,no-resolve
   - IP-CIDR,34.64.64.0/22,no-resolve
   - IP-CIDR,34.64.68.0/22,no-resolve
